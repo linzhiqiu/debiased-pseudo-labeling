@@ -6,7 +6,7 @@ python main_DebiasPL.py \
   --cos \
   --epochs 50 \
   --warmup-epoch 5 \
-  --trainindex_x train0.2p_index.csv --trainindex_u train_99.8p_index.csv \
+  --trainindex_x train_0.2p_index.csv --trainindex_u train_99.8p_index.csv \
   --dist-url 'tcp://localhost:10001' --multiprocessing-distributed --world-size 1 --rank 0 \
   --self-pretrained pretrained/res50_moco_eman_800ep.pth.tar \
   --amp-opt-level O1 \
