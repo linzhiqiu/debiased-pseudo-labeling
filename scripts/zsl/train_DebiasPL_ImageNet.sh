@@ -17,4 +17,5 @@ python main_DebiasPL_ZeroShot.py \
   --multiviews \
   --qhat_m 0.99 \
   --output checkpoints/ \
+  --cls 1000 \
   imagenet/

@@ -25,7 +25,7 @@ import data.datasets as datasets
 import backbone as backbone_models
 from models import get_fixmatch_model
 from utils import utils, lr_schedule, get_norm, dist_utils
-import data.transforms as data_transforms
+from data.datasets import get_imagenet_ssl
 from engine import validate
 from torch.utils.tensorboard import SummaryWriter
 
@@ -56,7 +56,7 @@ parser.add_argument('--backbone', default='resnet50_encoder',
 parser.add_argument('--cls', default=1000, type=int, metavar='N',
                     help='number of classes')
 parser.add_argument('-j', '--workers', default=32, type=int, metavar='N',
-                    help='number of data loading workers (default: 4)')
+                    help='number of data loading workers (default: 32)')
 parser.add_argument('--epochs', default=200, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
@@ -65,7 +65,7 @@ parser.add_argument('--warmup-epoch', default=0, type=int, metavar='N',
                     help='number of epochs for learning warmup')
 parser.add_argument('-b', '--batch-size', default=64, type=int,
                     metavar='N',
-                    help='mini-batch size (default: 256), this is the total '
+                    help='mini-batch size (default: 64), this is the total '
                          'batch size of all GPUs on the current node when '
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
@@ -191,7 +191,7 @@ def main():
         # Simply call main_worker function
         main_worker(args.gpu, ngpus_per_node, args)
 
-def causal_inference(current_logit, qhat, exp_idx, tau=0.5):
+def causal_inference(current_logit, qhat, tau=0.5):
     # de-bias pseudo-labels
     debiased_prob = F.softmax(current_logit - tau*torch.log(qhat), dim=1)
     return debiased_prob
@@ -453,7 +453,7 @@ def main_worker(gpu, ngpus_per_node, args):
         return
 
     best_epoch = args.start_epoch
-    qhat = initial_qhat(class_num=1000)
+    qhat = initial_qhat(class_num=args.cls)
 
     # load zero-shot predictions from CLIP
     clip_probs_list = torch.tensor(trainprobs_u, dtype=torch.float).cuda()
@@ -586,12 +586,12 @@ def train(train_loader_x, train_loader_u, model, optimizer, epoch, args, qhat=No
             logits_x, logits_u_w, logits_u_s = model(images_x, images_u_w, images_u_s)
 
         # producing debiased pseudo-labels
-        pseudo_label = causal_inference(logits_u_w.detach(), qhat, exp_idx=0, tau=args.tau)
+        pseudo_label = causal_inference(logits_u_w.detach(), qhat, tau=args.tau)
         if args.multiviews:
-            pseudo_label1 = causal_inference(logits_u_w1.detach(), qhat, exp_idx=0, tau=args.tau)
+            pseudo_label1 = causal_inference(logits_u_w1.detach(), qhat, tau=args.tau)
             max_probs1, pseudo_targets_u1 = torch.max(pseudo_label1, dim=-1)
             mask1 = max_probs1.ge(args.threshold).float()
-            pseudo_label2 = causal_inference(logits_u_w2.detach(), qhat, exp_idx=0, tau=args.tau)
+            pseudo_label2 = causal_inference(logits_u_w2.detach(), qhat, tau=args.tau)
             max_probs2, pseudo_targets_u2 = torch.max(pseudo_label2, dim=-1)
             mask2 = max_probs2.ge(args.threshold).float()
 
@@ -653,7 +653,7 @@ def train(train_loader_x, train_loader_u, model, optimizer, epoch, args, qhat=No
             loss_cld = 0
 
         # total loss
-        loss = loss_x + args.lambda_u * loss_u + args.lambda_cld*loss_cld
+        loss = loss_x + args.lambda_u * loss_u + args.lambda_cld * loss_cld
 
         if mask.sum() > 0:
             # measure pseudo-label accuracy
@@ -709,86 +709,6 @@ def train(train_loader_x, train_loader_u, model, optimizer, epoch, args, qhat=No
             writer.add_scalar('train/7.train_loss_CLD', losses_cld.avg, epoch)
     
     return qhat
-
-
-def get_imagenet_ssl(image_root, trainindex_x, trainindex_u,
-                     train_type='DefaultTrain', val_type='DefaultVal', weak_type='DefaultTrain',
-                     strong_type='RandAugment', multiviews=False, PseudoLabels_x=None):
-    traindir = os.path.join(image_root, 'train')
-    valdir = os.path.join(image_root, 'val')
-    transform_x = data_transforms.get_transforms(train_type)
-    weak_transform = data_transforms.get_transforms(weak_type)
-    strong_transform = data_transforms.get_transforms(strong_type)
-    if multiviews:
-        weak_transform2 = data_transforms.get_transforms(weak_type)
-        strong_transform2 = data_transforms.get_transforms(strong_type)
-        transform_u = data_transforms.FourCropsTransform(weak_transform, weak_transform2, strong_transform, strong_transform2)
-    else:
-        transform_u = data_transforms.TwoCropsTransform(weak_transform, strong_transform)
-    transform_val = data_transforms.get_transforms(val_type)
-
-    if PseudoLabels_x is not None:
-        train_dataset_x = datasets.ImageFolderWithIndexPseudoLabels(
-            traindir, trainindex_x, transform=transform_x, PseudoLabels=PseudoLabels_x)
-    else:
-        train_dataset_x = datasets.ImageFolderWithIndex(
-            traindir, trainindex_x, transform=transform_x)
-
-    train_dataset_u = datasets.ImageFolderWithIndexCLIP(
-        traindir, trainindex_u, transform=transform_u)
-
-    val_dataset = datasets.ImageFolder(
-        valdir, transform=transform_val)
-
-    return train_dataset_x, train_dataset_u, val_dataset
-
-
-def x_u_split(labels, percent, num_classes):
-    labels = np.array(labels)
-    labeled_idx = []
-    unlabeled_idx = []
-    for i in range(num_classes):
-        idx = np.where(labels == i)[0]
-        label_per_class = max(1, round(percent * len(idx)))
-        np.random.shuffle(idx)
-        labeled_idx.extend(idx[:label_per_class])
-        unlabeled_idx.extend(idx[label_per_class:])
-    print('labeled_idx ({}): {}, ..., {}'.format(len(labeled_idx), labeled_idx[:5], labeled_idx[-5:]))
-    print('unlabeled_idx ({}): {}, ..., {}'.format(len(unlabeled_idx), unlabeled_idx[:5], unlabeled_idx[-5:]))
-    return labeled_idx, unlabeled_idx
-
-
-def get_imagenet_ssl_random(image_root, percent, train_type='DefaultTrain',
-                            val_type='DefaultVal', weak_type='DefaultTrain', strong_type='RandAugment',
-                            multiviews=False):
-    traindir = os.path.join(image_root, 'train')
-    valdir = os.path.join(image_root, 'val')
-    transform_x = data_transforms.get_transforms(train_type)
-    weak_transform = data_transforms.get_transforms(weak_type)
-    strong_transform = data_transforms.get_transforms(strong_type)
-    if multiviews:
-        strong_transform2 = data_transforms.get_transforms(strong_type)
-        strong_transform3 = data_transforms.get_transforms(strong_type)
-        transform_u = data_transforms.FourCropsTransform(weak_transform, strong_transform, strong_transform2, strong_transform3)
-    else:
-        transform_u = data_transforms.TwoCropsTransform(weak_transform, strong_transform)
-    transform_val = data_transforms.get_transforms(val_type)
-
-    base_dataset = datasets.ImageFolder(traindir)
-
-    train_idxs_x, train_idxs_u = x_u_split(
-        base_dataset.targets, percent, len(base_dataset.classes))
-
-    train_dataset_x = datasets.ImageFolderWithIndex(
-        traindir, train_idxs_x, transform=transform_x)
-
-    train_dataset_u = datasets.ImageFolderWithIndex(
-        traindir, train_idxs_u, transform=transform_u)
-
-    val_dataset = datasets.ImageFolder(
-        valdir, transform=transform_val)
-
-    return train_dataset_x, train_dataset_u, val_dataset
 
 
 def save_checkpoint(state, is_best, ckpt_path='', filename='checkpoint.pth.tar'):

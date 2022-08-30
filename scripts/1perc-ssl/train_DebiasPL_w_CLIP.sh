@@ -18,4 +18,5 @@ python main_DebiasPL.py \
   --qhat_m 0.99 \
   --use_clip \
   --output checkpoints/ \
+  --cls 1000 \
   imagenet/

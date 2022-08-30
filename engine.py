@@ -70,6 +70,71 @@ def validate(val_loader, model, criterion, args):
     return top1.avg
 
 
+def validate_perclass(val_loader, model, criterion, args, prefix='Test'):
+    batch_time = utils.AverageMeter('Time', ':6.3f')
+    losses = utils.AverageMeter('Loss', ':.4e')
+    acc = utils.AverageMeter('Acc@1', ':6.2f')
+    progress = utils.ProgressMeter(
+        len(val_loader),
+        [batch_time, losses, acc],
+        prefix=f'{prefix}: ')
+
+    # switch to evaluate mode
+    model.eval()
+
+    with torch.no_grad():
+        end = time.time()
+        for i, (images, target) in enumerate(val_loader):
+            if args.gpu is not None:
+                images = images.cuda(args.gpu, non_blocking=True)
+            target = target.cuda(args.gpu, non_blocking=True)
+
+            # compute output
+            output = model(images)
+            loss = criterion(output, target)
+
+            # measure accuracy and record loss
+            probs = torch.softmax(output, dim=-1)
+            _, preds = probs.topk(1, 1, True, True)
+            preds = preds.view(-1)
+            if i == 0:
+                preds_list = preds.cpu()
+                target_list = target.cpu()
+            else:
+                preds_list = torch.cat((preds_list, preds.cpu()), dim=0)
+                target_list = torch.cat((target_list, target.cpu()), dim=0)
+
+            acc1 = utils.accuracy(output, target, topk=(1))
+            losses.update(loss.item(), images.size(0))
+            acc.update(acc1[0], images.size(0))
+
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+            if i % args.print_freq == 0:
+                progress.display(i)
+
+        try:
+            num_classes = max(val_loader.dataset.labels)
+        except:
+            num_classes = max(val_loader.dataset.targets)
+        assert num_classes == args.cls
+        perclass_acc = [0 for c in range(num_classes)]
+        for c in range(num_classes):
+            perclass_acc[c] = ((preds_list == target_list) * (target_list == c)).sum().float() / max((target_list == c).sum(), 1)
+        mean_acc = sum(perclass_acc) / num_classes
+        # TODO: this should also be done with the ProgressMeter
+        print(' * Acc@1 {acc.avg:.3%} mAcc {mean_acc:.3%} minAcc {min(perclass_acc):.3%} maxAcc {max(perclass_acc):.3%} Loss {loss.avg:.4f}'
+              .format(acc=acc, mean_acc=mean_acc, perclass_acc=perclass_acc, loss=losses))
+
+    return {
+        'top1' : acc.avg, 
+        'mean' : mean_acc,
+        'all' : perclass_acc
+    }
+
+
 def ss_validate(val_loader_base, val_loader_query, model, args):
     print("start KNN evaluation with key size={} and query size={}".format(
         len(val_loader_base.dataset.targets), len(val_loader_query.dataset.targets)))

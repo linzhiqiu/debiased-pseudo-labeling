@@ -17,4 +17,5 @@ python main_DebiasPL.py \
   --multiviews \
   --qhat_m 0.999 \
   --output checkpoints/ \
+  --cls 1000 \
   imagenet/

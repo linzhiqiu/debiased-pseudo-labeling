@@ -1,28 +1,30 @@
-# DebiasPL: Debiased Pseudo-Labeling
+# Imbalanced Semi-supervised Learning
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/debiased-learning-from-naturally-imbalanced/few-shot-image-classification-on-imagenet-0)](https://paperswithcode.com/sota/few-shot-image-classification-on-imagenet-0?p=debiased-learning-from-naturally-imbalanced)
+<!-- [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/debiased-learning-from-naturally-imbalanced/few-shot-image-classification-on-imagenet-0)](https://paperswithcode.com/sota/few-shot-image-classification-on-imagenet-0?p=debiased-learning-from-naturally-imbalanced)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/debiased-learning-from-naturally-imbalanced/semi-supervised-image-classification-on-16)](https://paperswithcode.com/sota/semi-supervised-image-classification-on-16?p=debiased-learning-from-naturally-imbalanced)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/debiased-learning-from-naturally-imbalanced/semi-supervised-image-classification-on-1)](https://paperswithcode.com/sota/semi-supervised-image-classification-on-1?p=debiased-learning-from-naturally-imbalanced)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/debiased-learning-from-naturally-imbalanced/semi-supervised-image-classification-on-1)](https://paperswithcode.com/sota/semi-supervised-image-classification-on-1?p=debiased-learning-from-naturally-imbalanced) -->
 
-This repository contains the code (in PyTorch) for the model introduced in the following paper:
+This repository contains the code (in PyTorch) for deep imbalanced semi-supervised learning for ImageNet127 and Semi-iNat-2021.
 
+
+<!-- 
 > **[Debiased Learning from Naturally Imbalanced Pseudo-Labels](https://openaccess.thecvf.com/content/CVPR2022/papers/Wang_Debiased_Learning_From_Naturally_Imbalanced_Pseudo-Labels_CVPR_2022_paper.pdf)**<br>
 > [Xudong Wang](http://people.eecs.berkeley.edu/~xdwang/), [Zhirong Wu](https://www.microsoft.com/en-us/research/people/wuzhiron/), [Long Lian](https://github.com/TonyLianLong/), and [Stella X. Yu](http://www1.icsi.berkeley.edu/~stellayu/)<br>
 > UC Berkeley and Microsoft Research<br>
-> [CVPR 2022](https://cvpr2022.thecvf.com)
+> [CVPR 2022](https://cvpr2022.thecvf.com) -->
 
-[Project Page](https://people.eecs.berkeley.edu/~xdwang/projects/DebiasPL/) | [Paper](https://openaccess.thecvf.com/content/CVPR2022/papers/Wang_Debiased_Learning_From_Naturally_Imbalanced_Pseudo-Labels_CVPR_2022_paper.pdf) | [Preprint](https://arxiv.org/abs/2201.01490) | [Citation](#citation)
+<!-- [Project Page](https://people.eecs.berkeley.edu/~xdwang/projects/DebiasPL/) | [Paper](https://openaccess.thecvf.com/content/CVPR2022/papers/Wang_Debiased_Learning_From_Naturally_Imbalanced_Pseudo-Labels_CVPR_2022_paper.pdf) | [Preprint](https://arxiv.org/abs/2201.01490) | [Citation](#citation) -->
 
-<p align="center">
+<!-- <p align="center">
   <img src="https://github.com/frank-xwang/debiased-pseudo-labeling/blob/main/DebiasPL.gif" width=70%>
 </p>
 
 <p align="center">
   <img align="center" src="https://github.com/frank-xwang/debiased-pseudo-labeling/blob/main/result.png" width=57%>
   <img align="center" src="https://github.com/frank-xwang/debiased-pseudo-labeling/blob/main/ZSL-DomainShift.png" width=40%>
-</p>
+</p> -->
 
-## Citation
+<!-- ## Citation
 If you find our work inspiring or use our codebase in your research, please consider giving a star ⭐ and a citation.
 ```
 @inproceedings{wang2022debiased,
@@ -32,29 +34,43 @@ If you find our work inspiring or use our codebase in your research, please cons
   pages={14647--14657},
   year={2022}
 }
-```
-
+``` -->
+<!-- 
 ## Updates
 [06/2022] Support DebiasPL w/ CLIP for more label-efficient learning. DebiasPL (ResNet50) achieves 69.6% (71.3%) top-1 accuray on ImageNet only using 0.2% (1%) labels!
 
-[04/2022] Initial Commit. Support zero-shot learning and semi-supervised learning on ImageNet.
+[04/2022] Initial Commit. Support zero-shot learning and semi-supervised learning on ImageNet. -->
 
 ## Requirements
+A conda environment file is provided at [environment.yml](environment.yml). You may need to install your own PyTorch version depending on your system's cuda version. In that case, please install the following packages:
+
 ### Packages
 * Python >= 3.7, < 3.9
 * PyTorch >= 1.6
-* torchaudio==0.7.2
+* torchaudio>=0.7.2
 * tensorboard >= 1.14 (for visualization)
 * tqdm
+* gdown
 * faiss-gpu
 * pandas
-* apex (optional, unless using mixed precision training)
+* [apex](https://github.com/NVIDIA/apex) (optional, unless using mixed precision training)
 
 ### Hardware requirements
-8 GPUs with >= 11G GPU RAM or 4 GPUs with >= 16G GPU RAM are recommended.
+8 GPUs with >= 11G GPU RAM are recommended.
 
 ## Dataset and Pre-trained Model Preparation
-Please download pre-trained [MoCo-EMAN model](https://eman-cvpr.s3.amazonaws.com/models/res50_moco_eman_800ep.pth.tar), make a new folder called pretrained and place checkpoints under it. Please download the ImageNet dataset from [this link](http://www.image-net.org/). Then, move and extract the training and validation images to labeled subfolders, using the following [shell script](https://github.com/pytorch/examples/blob/main/imagenet/extract_ILSVRC.sh). 
+### Models
+Please download ImageNet pre-trained [MoCo-EMAN model](https://eman-cvpr.s3.amazonaws.com/models/res50_moco_eman_800ep.pth.tar), make a new folder called pretrained and place checkpoints under it. 
+
+### Dataset
+
+#### Semi-iNat
+Please download the Semi-iNat dataset from [this link](https://drive.google.com/u/0/uc?id=1kNWhy77tbet3HBrFrzy3Xw4S8uPVkDdb) and make sure the md5 is **f97619d670278deaacce58ceaf2b5732**. Then 
+
+
+#### ImageNet127
+Please download the ImageNet2012 dataset from [this link](http://www.image-net.org/). Then, move and extract the training and validation images to labeled subfolders, using the following [shell script](extract_ImageNet.sh).
+
 The indexes for semi-supervised learning experiments can be found at [here](https://drive.google.com/drive/folders/18fi_lxZQK_J_E9Uam0c9G1VCfnKYyhmF?usp=sharing). The setting with 1% labeled data is the same as FixMatch. A new list of indexes is made for the setting with 0.2% labeled data by randomly selecting 0.2% of instances from each class. Please put all CSV files in the same location as below:
 
 ```
