@@ -6,12 +6,14 @@ import os
 from pathlib import Path
 import pandas as pd
 
+
 IMAGENET127_CLASSES_PATH = os.path.join(
     'imagenet127', 'synset_words_up_down_127.txt')
 IMAGENET127_TRAIN_PATH = os.path.join(
     'imagenet127', 'train_up_down_127.txt')
 IMAGENET127_VAL_PATH = os.path.join(
     'imagenet127', 'val_up_down_127.txt')
+
 
 def readlines(file_path):
     # read txt file and return a list of strings
@@ -45,6 +47,7 @@ def get_transforms_from_type(train_type, val_type, weak_type, strong_type, multi
         transform_u = data_transforms.TwoCropsTransform(weak_transform, strong_transform)
     transform_val = data_transforms.get_transforms(val_type)
     return transform_x, transform_u, transform_val
+
 
 class ImageDataset(Dataset):
     def __init__(self, samples, transform, class_names=None):
@@ -295,7 +298,7 @@ class SortedImageFolderWithIndex(SortedImageFolder):
             img = self.transform(img)
         if self.target_transform is not None:
             target = self.target_transform(target)
-        return img, target, index
+        return img, target
 
     def __len__(self):
         return len(self.imgs)

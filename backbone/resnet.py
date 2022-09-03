@@ -142,7 +142,7 @@ class ResNet(nn.Module):
 
         self.out_channels = 512 * width_multiplier * block.expansion
 
-        self.dropout = nn.Dropout2d(p=0.45, inplace=False)
+        self.dropout = nn.Dropout(p=0.45, inplace=False)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):

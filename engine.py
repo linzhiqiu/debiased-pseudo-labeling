@@ -104,7 +104,7 @@ def validate_perclass(val_loader, model, criterion, args, prefix='Test'):
                 preds_list = torch.cat((preds_list, preds.cpu()), dim=0)
                 target_list = torch.cat((target_list, target.cpu()), dim=0)
 
-            acc1 = utils.accuracy(output, target, topk=(1))
+            acc1, _ = utils.accuracy(output, target, topk=(1, 5))
             losses.update(loss.item(), images.size(0))
             acc.update(acc1[0], images.size(0))
 
@@ -115,21 +115,18 @@ def validate_perclass(val_loader, model, criterion, args, prefix='Test'):
             if i % args.print_freq == 0:
                 progress.display(i)
 
-        try:
-            num_classes = max(val_loader.dataset.labels)
-        except:
-            num_classes = max(val_loader.dataset.targets)
-        assert num_classes == args.cls
-        perclass_acc = [0 for c in range(num_classes)]
-        for c in range(num_classes):
+        perclass_acc = [0 for c in range(args.cls)]
+        for c in range(args.cls):
             perclass_acc[c] = ((preds_list == target_list) * (target_list == c)).sum().float() / max((target_list == c).sum(), 1)
-        mean_acc = sum(perclass_acc) / num_classes
-        # TODO: this should also be done with the ProgressMeter
-        print(' * Acc@1 {acc.avg:.3%} mAcc {mean_acc:.3%} minAcc {min(perclass_acc):.3%} maxAcc {max(perclass_acc):.3%} Loss {loss.avg:.4f}'
-              .format(acc=acc, mean_acc=mean_acc, perclass_acc=perclass_acc, loss=losses))
+        acc = (preds_list == target_list).sum().float() / len(target_list)
+        mean_acc = sum(perclass_acc) / args.cls
+        min_perclass_acc = min(perclass_acc)
+        max_perclass_acc = max(perclass_acc)
+        print(' * Acc@1 {acc:.3%} mAcc {mean_acc:.3%} minAcc {min_perclass_acc:.3%} maxAcc {max_perclass_acc:.3%} Loss {loss.avg:.4f}'
+              .format(acc=acc, mean_acc=mean_acc, min_perclass_acc=min_perclass_acc, max_perclass_acc=max_perclass_acc, loss=losses))
 
     return {
-        'top1' : acc.avg, 
+        'top1' : acc, 
         'mean' : mean_acc,
         'all' : perclass_acc
     }

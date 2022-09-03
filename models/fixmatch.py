@@ -3,9 +3,9 @@ import torch.nn as nn
 
 
 class ResNet(nn.Module):
-    def __init__(self, base_encoder, num_classes, norm_layer=None):
+    def __init__(self, base_encoder, num_classes, norm=None):
         super(ResNet, self).__init__()
-        self.backbone = base_encoder(norm_layer=norm_layer)
+        self.backbone = base_encoder(norm_layer=norm)
         assert not hasattr(self.backbone, 'fc'), "fc should not in backbone"
         self.fc = nn.Linear(self.backbone.out_channels, num_classes)
 
@@ -21,11 +21,11 @@ class FixMatch(nn.Module):
         super(FixMatch, self).__init__()
         self.eman = eman
         self.momentum = momentum
-        self.main = ResNet(base_encoder, num_classes, norm_layer=norm)
+        self.main = ResNet(base_encoder, num_classes, norm=norm)
         # build ema model
         if eman:
             print("using EMAN as teacher model")
-            self.ema = ResNet(base_encoder, num_classes, norm_layer=norm)
+            self.ema = ResNet(base_encoder, num_classes, norm=norm)
             for param_main, param_ema in zip(self.main.parameters(), self.ema.parameters()):
                 param_ema.data.copy_(param_main.data)  # initialize
                 param_ema.requires_grad = False  # not update by gradient
