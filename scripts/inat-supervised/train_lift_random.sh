@@ -2,6 +2,11 @@
 # Best Test Acc 0.6676532626152039 @ Best val epoch 265
 # Best Test Acc 0.6708632707595825 @ epoch 259
 # checkpoint not available
+
+# Best Val Acc 0.613990068435669 @ epoch 265
+# Best Test Acc 0.661480724811554 @ Best val epoch 265
+# Best Test Acc 0.6701223850250244 @ epoch 295
+# checkpoint saved in:  checkpoints/supervised/semi_inat_lift_random/09-03-2022-01:09
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_supervised.py \
   /scratch/fercus/semi_inat \

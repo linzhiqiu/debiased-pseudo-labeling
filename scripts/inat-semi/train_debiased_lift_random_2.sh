@@ -1,12 +1,7 @@
-# Best Val Acc 0.6584098935127258 @ epoch 536
-# Best Test Acc 0.7135792970657349 @ Best val epoch 536
-# Best Test Acc 0.7158014178276062 @ epoch 558
-# checkpoint saved in:  checkpoints/semi_supervised/inat_debiased_lift_tail_2/09-03-2022-01:04
-
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_semi_supervised.py \
   /scratch/fercus/semi_inat \
-  --index_name default_lift_tail \
+  --index_name default_lift_random \
   --dataset semi_inat \
   --arch FixMatch --backbone resnet50_encoder \
   --debiased True \
@@ -26,5 +21,5 @@ python main_semi_supervised.py \
   --strong-type RandAugment \
   --multiviews \
   --qhat_m 0.99 \
-  --output checkpoints/semi_supervised/inat_debiased_lift_tail_2/ \
+  --output checkpoints/semi_supervised/inat_debiased_lift_random_2/ \
   --cls 810 \
