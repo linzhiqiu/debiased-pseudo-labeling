@@ -118,7 +118,6 @@ dependencies:
   - pip:
     - absl-py==1.2.0
     - anykeystore==0.2
-    - apex==0.1
     - beautifulsoup4==4.11.1
     - charset-normalizer==2.1.1
     - cryptacular==1.6.2
