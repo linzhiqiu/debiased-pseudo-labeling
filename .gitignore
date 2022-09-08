@@ -1,8 +1,8 @@
 __pycache__/*
 */__pycache__
-checkpoints
-imagenet
-semi_inat
-pretrained
+/checkpoints
+/imagenet
+/semi_inat
+/pretrained
 __MACOSX/
 .ipynb_checkpoints/
