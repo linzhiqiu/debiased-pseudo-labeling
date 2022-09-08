@@ -42,7 +42,7 @@ If you find our work inspiring or use our codebase in your research, please cons
 [04/2022] Initial Commit. Support zero-shot learning and semi-supervised learning on ImageNet. -->
 
 ## Requirements
-A conda environment file is provided at [environment.yml](environment.yml). You may need to install your own PyTorch version depending on your system's cuda version. In that case, please install the following packages:
+Please install the following packages:
 
 ### Packages
 * Python >= 3.7, < 3.9

@@ -1,6 +1,6 @@
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_semi_supervised.py \
-  /ssd1/fercus/semi_inat \
+  /scratch/fercus/semi_inat \
   --index_name default \
   --dataset semi_inat \
   --arch FixMatch --backbone resnet50_encoder \
