@@ -1,7 +1,3 @@
-# Best Val Acc 0.732079803943634 @ epoch 46
-# Best Test Acc 0.7095403075218201 @ Best val epoch 46
-# Best Test Acc 0.7153311967849731 @ epoch 48
-# checkpoint saved in:  checkpoints/semi_supervised/imagenet127_debiased_1/09-02-2022-19:14
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_semi_supervised.py \
   /scratch/fercus/imagenet \
@@ -10,8 +6,8 @@ python main_semi_supervised.py \
   --arch FixMatch --backbone resnet50_encoder \
   --debiased True \
   --eman \
-  --lr 0.03 \
-  --weight-decay 1e-4 \
+  --lr 0.003 \
+  --weight-decay 1e-5 \
   --cos \
   --epochs 50 \
   --warmup-epoch 5 \
@@ -25,5 +21,5 @@ python main_semi_supervised.py \
   --strong-type RandAugment \
   --multiviews \
   --qhat_m 0.99 \
-  --output checkpoints/semi_supervised/imagenet127_debiased_1/ \
+  --output checkpoints/semi_supervised/imagenet127_debiased_wd_2/ \
   --cls 127 \
