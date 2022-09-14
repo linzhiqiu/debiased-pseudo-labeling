@@ -65,8 +65,24 @@ Please download ImageNet pre-trained [MoCo-EMAN model](https://eman-cvpr.s3.amaz
 ### Dataset
 
 #### Semi-iNat
-Please download the Semi-iNat dataset from [this link](https://drive.google.com/u/0/uc?id=1kNWhy77tbet3HBrFrzy3Xw4S8uPVkDdb) and make sure the md5 is **f97619d670278deaacce58ceaf2b5732**. Then 
+<!-- Please download the Semi-iNat dataset from [this link](https://drive.google.com/u/0/uc?id=1kNWhy77tbet3HBrFrzy3Xw4S8uPVkDdb) and make sure the md5 is **f97619d670278deaacce58ceaf2b5732**. Then  -->
+Please download the Semi-iNat dataset from the [official github repo](https://github.com/cvl-umass/semi-inat-2021). Then, place it under the inat/ folder. Then, extract all the tar files. The folder structure should look like:
+```
+inat/
+|–– l_train/
+|–– val/
+|–– u_train/
+|–– test/
+|–– annotation_v2.json
+|–– u_train_in.txt
+|–– u_train_out.txt
+|–– ...
+```
 
+Next, run the below scripts to make a testset by merging the original train and val set.
+```
+python inat.py
+```
 
 #### ImageNet127
 Please download the ImageNet2012 dataset from [this link](http://www.image-net.org/). Then, move and extract the training and validation images to labeled subfolders, using the following [shell script](extract_ImageNet.sh).

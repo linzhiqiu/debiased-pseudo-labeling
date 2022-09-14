@@ -9,7 +9,7 @@ def _get_perclass_count(train_index_file, val_index_file, test_index_file, unlab
     test_targets = np.array(pd.read_csv(test_index_file)['Target'].tolist())
     unlabeled_targets = np.array(pd.read_csv(unlabeled_index_file)['Target'].tolist())
 
-    num_classes = max(test_targets)
+    num_classes = max(test_targets) + 1
     all_targets = np.concatenate((train_targets, val_targets, unlabeled_targets))
     all_perclass_count = [len(np.where(all_targets == i)[0]) for i in range(num_classes)]
 
@@ -55,7 +55,6 @@ def get_perclass_count(dataset='imagenet127',
     val_index_file = os.path.join(index_dir_path, index_name, "val.csv")
     unlabeled_index_file = os.path.join(index_dir_path, index_name, "unlabeled.csv")
     test_index_file = os.path.join(index_dir_path, "test.csv")
-
     return _get_perclass_count(
         train_index_file, val_index_file, test_index_file, unlabeled_index_file,
         verbose=verbose)

@@ -104,10 +104,10 @@ class SortedImageFolder(ImageFolder):
         return classes, class_to_idx
 
 
-def get_semi_inat_datasets(root, train_type='DefaultTrain', val_type='DefaultVal'):
+def get_inat_datasets(root, train_type='DefaultTrain', val_type='DefaultVal'):
     # return all / test sets of semi_inat from root
-    traindir = os.path.join(root, 'l_train_and_u_train_in')
-    testdir = os.path.join(root, 'val')
+    traindir = os.path.join(root, 'u_train_in')
+    testdir = os.path.join(root, 'l_train_and_val')
     assert os.path.exists(traindir)
     assert os.path.exists(testdir)
     transform_train = data_transforms.get_transforms(train_type)
@@ -143,7 +143,7 @@ def x_u_v_split(labels, train_ratio, val_ratio, num_classes, least_num_per_class
     return train_index, unlabeled_index, val_index
 
 
-def get_semi_inat_ssl_datasets(
+def get_inat_ssl_datasets(
         root,
         train_index_file,
         val_index_file,
@@ -154,8 +154,8 @@ def get_semi_inat_ssl_datasets(
         weak_type='DefaultTrain',
         strong_type='RandAugment',
         multiviews=False):
-    traindir = os.path.join(root, 'l_train_and_u_train_in')
-    testdir = os.path.join(root, 'val')
+    traindir = os.path.join(root, 'u_train_in')
+    testdir = os.path.join(root, 'l_train_and_val')
     assert os.path.exists(traindir)
     assert os.path.exists(testdir)
 

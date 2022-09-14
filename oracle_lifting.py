@@ -1,5 +1,5 @@
-# python oracle_lifting.py --dataset semi_inat --seed=1 --index_name default --threshold 20 --lift random
-# python oracle_lifting.py --dataset semi_inat --seed=1 --index_name default --threshold 20 --lift tail
+# python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift random
+# python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift tail
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 120 --lift random
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 120 --lift tail
 import argparse
@@ -19,8 +19,8 @@ import data.datasets as datasets
 
 parser = argparse.ArgumentParser(description='PyTorch Dataset Index Preparation')
 parser.add_argument('--dataset', default='imagenet127', type=str,
-                    choices=['semi_inat', 'imagenet127'],
-                    help='dataset to use, choices: [semi_inat, imagenet127]')
+                    choices=['inat', 'imagenet127'],
+                    help='dataset to use, choices: [inat, imagenet127]')
 parser.add_argument('--index_name', default='default', type=str,
                     help='name of index dir (the directory under indexes/)')
 parser.add_argument('--lift', default='random', type=str,
