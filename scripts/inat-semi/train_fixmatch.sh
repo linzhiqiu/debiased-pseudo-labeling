@@ -1,8 +1,8 @@
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_semi_supervised.py \
-  /ssd1/fercus/semi_inat \
+  /scratch/fercus/inat \
   --index_name default \
-  --dataset semi_inat \
+  --dataset inat \
   --arch FixMatch --backbone resnet50_encoder \
   --debiased False \
   --eman \
@@ -14,7 +14,7 @@ python main_semi_supervised.py \
   --dist-url 'tcp://localhost:11001' --multiprocessing-distributed --world-size 1 --rank 0 \
   --self-pretrained pretrained/res50_moco_eman_800ep.pth.tar \
   --amp-opt-level O1 \
-  --threshold 0.8 \
+  --threshold 0.95 \
   --train-type RandAugment \
   --weak-type DefaultTrain \
   --strong-type RandAugment \

@@ -23,7 +23,7 @@ import torch.utils.data
 import torch.utils.data.distributed
 from torch.utils.data import DataLoader, RandomSampler
 from torch.utils.data.distributed import DistributedSampler
-from data.datasets import get_semi_inat_ssl_datasets, get_imagenet127_ssl_datasets
+from data.datasets import get_inat_ssl_datasets, get_imagenet127_ssl_datasets
 import backbone as backbone_models
 from models import get_fixmatch_model
 from utils import utils, lr_schedule, get_norm, dist_utils
@@ -45,8 +45,8 @@ parser = argparse.ArgumentParser(description='PyTorch Supervised Training')
 parser.add_argument('root', metavar='DIR',
                     help='path to dataset')
 parser.add_argument('--dataset', default='imagenet127', type=str,
-                    choices=['semi_inat', 'imagenet127'],
-                    help='dataset to use, choices: [semi_inat, imagenet127]')
+                    choices=['inat', 'imagenet127'],
+                    help='dataset to use, choices: [inat, imagenet127]')
 parser.add_argument('--index_name', default='default', type=str,
                     help='name of index dir (the directory under indexes/)')
 parser.add_argument('--arch', metavar='ARCH', default='FixMatch',
@@ -310,9 +310,9 @@ def main_worker(gpu, ngpus_per_node, args):
     cudnn.benchmark = True
 
     # Supervised Data loading code
-    if args.dataset == 'semi_inat':
-        index_dir = Path('indexes') / 'semi_inat'
-        dataset_func = get_semi_inat_ssl_datasets
+    if args.dataset == 'inat':
+        index_dir = Path('indexes') / 'inat'
+        dataset_func = get_inat_ssl_datasets
     elif args.dataset == 'imagenet127':
         index_dir = Path('indexes') / 'imagenet127'
         dataset_func = get_imagenet127_ssl_datasets
