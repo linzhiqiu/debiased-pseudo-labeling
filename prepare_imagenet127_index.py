@@ -1,5 +1,5 @@
 # To prepare imagenet127 train/val/test splits after downloading from http://image-net.org/download-images
-# python prepare_imagenet127_index.py ./ --root=/scratch/fercus/ --seed=1
+# python prepare_imagenet127_index.py --data ./ --seed=1
 import argparse
 import math
 import os
@@ -17,17 +17,15 @@ from utils import extract_archive
 import data.datasets as datasets
 
 parser = argparse.ArgumentParser(description='PyTorch Dataset Index Preparation')
-parser.add_argument('data', metavar='DIR',
+parser.add_argument('--data', metavar='DIR', default='./',
                     help='path to downloaded dataset')
-parser.add_argument('--root', default=None, type=str, metavar='DIR',
-                    help='path to root (specify if need to transfer dataset from args.data to a compute node)')
 parser.add_argument('--index_name', default='default', type=str,
                     help='name of index')
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for split train/val sets. ')
-parser.add_argument('--train-ratio', type=float, default=0.08,
+parser.add_argument('--train-ratio', type=float, default=0.01,
                     help='ratio of train data')
-parser.add_argument('--val-ratio', type=float, default=0.02,
+parser.add_argument('--val-ratio', type=float, default=0.005,
                     help='ratio of val data')
 
 
@@ -38,18 +36,6 @@ def main():
     data = Path(args.data)
     assert (data / 'imagenet').exists(), "imagenet folder not found"
 
-    if args.root is not None:
-        root = Path(args.root) / "imagenet"
-        if not root.exists():
-            print(f"Copy data from {data}/imagenet to {root}")
-            print(f"It could be faster to run rsync: ")
-            print(f"rsync -rtuvp {data / 'semi_inat'}/ {root}/")
-            shutil.copytree(data / "imagenet", root)
-        else:
-            print(f"{root} already exists.")
-    else:
-        root = data / "imagenet"
-
     index_dir = Path("indexes") / "imagenet127" / f"{args.index_name}"
     if not index_dir.exists():
         index_dir.mkdir(parents=True)
@@ -58,12 +44,14 @@ def main():
     unlabeled_index_file = index_dir / "unlabeled.csv"
     test_index_file = Path("indexes") / "imagenet127" / f"test.csv"
 
-    all_dataset, test_dataset = datasets.get_imagenet127_datasets(root)
+    data = data / "imagenet"
+
+    all_dataset, test_dataset = datasets.get_imagenet127_datasets(data)
     if not test_index_file.exists():
         # make test index
         test_samples = test_dataset.samples
         test_indexes = [idx for idx, _ in enumerate(test_samples)]
-        test_paths = [s[0][len(str(root))+1:] for s in test_samples] # relative to root
+        test_paths = [s[0][len(str(data))+1:] for s in test_samples] # relative to data
         test_targets = [s[1] for s in test_samples]
         test_df = pd.DataFrame({"Index": test_indexes, "Path": test_paths, "Target": test_targets})
         test_df.to_csv(test_index_file, index=False)
@@ -81,7 +69,7 @@ def main():
 
         all_samples = all_dataset.samples
         all_indexes = [idx for idx, _ in enumerate(all_samples)]
-        all_paths = [s[0][len(str(root))+1:] for s in all_samples] # relative to root
+        all_paths = [s[0][len(str(data))+1:] for s in all_samples] # relative to data
         all_targets = [s[1] for s in all_samples]
 
         num_classes = max(all_targets) + 1

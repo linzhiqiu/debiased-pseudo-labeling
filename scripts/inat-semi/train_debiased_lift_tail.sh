@@ -1,3 +1,7 @@
+# Best Val Acc 0.658689022064209 @ epoch 430
+# Best Test Acc 0.7233310341835022 @ Best val epoch 430
+# Best Test Acc 0.728401780128479 @ epoch 537
+# checkpoint saved in:  checkpoints/semi_supervised/inat_debiased_lift_tail/09-14-2022-20:07
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_semi_supervised.py \
   /scratch/fercus/inat \

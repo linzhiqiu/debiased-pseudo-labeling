@@ -1,7 +1,7 @@
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift random
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift tail
-# python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 120 --lift random
-# python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 120 --lift tail
+# python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --lift random
+# python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --lift tail
 import argparse
 import math
 import os
