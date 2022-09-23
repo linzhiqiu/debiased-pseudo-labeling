@@ -21,5 +21,5 @@ python main_semi_supervised.py \
   --strong-type RandAugment \
   --multiviews \
   --qhat_m 0.99 \
-  --output checkpoints/semi_supervised/imagenet127_debiased_lift_random/ \
+  --output checkpoints/semi_supervised/imagenet127_debiased_1_lift_random/ \
   --cls 127 \
