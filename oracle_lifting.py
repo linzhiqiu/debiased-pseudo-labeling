@@ -1,3 +1,7 @@
+# python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --budget 6 --lift tail_uniform
+# python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --budget 6 --lift uniform
+# python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --budget 12 --lift tail_uniform
+# python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --budget 12 --lift uniform
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift random
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift tail
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --lift random
@@ -24,22 +28,43 @@ parser.add_argument('--dataset', default='imagenet127', type=str,
 parser.add_argument('--index_name', default='default', type=str,
                     help='name of index dir (the directory under indexes/)')
 parser.add_argument('--lift', default='random', type=str,
-                    choices=['random', 'tail'],
+                    choices=['random', 'tail', 'tail_uniform'],
                     help='lifting method')
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for lifting tail. ')
 parser.add_argument('--threshold', type=int, default=20,
                     help='to lift tail such that all classes are above this threshold')
+parser.add_argument('--budget', type=int, default=10,
+                    help='lifting budget per tail class')
+
 
 def lift_tail(train_targets, unlabeled_targets, num_classes, threshold):
     train_perclass_count = [len(np.where(train_targets == i)[0]) for i in range(num_classes)]
     train_perclass_count = np.array(train_perclass_count)
     lifted_tail_samples = np.array([], dtype=np.int64)
+    num_tail_classes = 0
+    tail_classes = []
     for i in range(num_classes):
         if train_perclass_count[i] < threshold:
+            num_tail_classes += 1
+            tail_classes.append(i)
             to_lift_num = threshold - train_perclass_count[i]
             lifted_tail_samples = np.concatenate((lifted_tail_samples, np.where(unlabeled_targets == i)[0][:to_lift_num]))
-    return lifted_tail_samples
+    return lifted_tail_samples, num_tail_classes, tail_classes
+
+
+def lift_uniform(train_targets, unlabeled_targets, num_classes, threshold, budget):
+    train_perclass_count = [len(np.where(train_targets == i)[0]) for i in range(num_classes)]
+    train_perclass_count = np.array(train_perclass_count)
+    lifted_tail_samples = np.array([], dtype=np.int64)
+    num_tail_classes = 0
+    tail_classes = []
+    for i in range(num_classes):
+        if train_perclass_count[i] < threshold:
+            num_tail_classes += 1
+            tail_classes.append(i)
+            lifted_tail_samples = np.concatenate((lifted_tail_samples, np.random.choice(np.where(unlabeled_targets == i)[0], budget, replace=False)))
+    return lifted_tail_samples, num_tail_classes, tail_classes
 
 def main():
     args = parser.parse_args()
@@ -79,11 +104,21 @@ def main():
         
         num_classes = max(train_targets) + 1
 
-        lifted_tail_samples = lift_tail(train_targets, unlabeled_targets, num_classes, args.threshold)
-        if args.lift == 'random':
-            lifted_tail_samples = np.random.choice(
-                np.arange(len(unlabeled_indexes)), size=len(lifted_tail_samples), replace=False
-            )
+        if args.lift in ['random', 'tail']:
+            lifted_tail_samples, num_tail_classes, tail_classes = lift_tail(
+                train_targets, unlabeled_targets, num_classes, args.threshold)
+            if args.lift == 'random':
+                lifted_tail_samples, _, _ = np.random.choice(
+                    np.arange(len(unlabeled_indexes)), size=len(lifted_tail_samples), replace=False
+                )
+        elif args.lift in ['uniform', 'tail_uniform']:
+            lifted_tail_samples, num_tail_classes, tail_classes = lift_uniform(
+                train_targets, unlabeled_targets, num_classes, args.threshold, args.budget)
+            if args.lift == 'uniform':
+                lifted_tail_samples, _, _ = np.random.choice(
+                    np.arange(len(unlabeled_indexes)), size=len(lifted_tail_samples), replace=False
+                )
+
         print("lifted_tail_samples length:", len(lifted_tail_samples))
         new_train_indexes = np.concatenate((train_indexes, unlabeled_indexes[lifted_tail_samples]))
         new_train_paths = np.concatenate((train_paths, unlabeled_paths[lifted_tail_samples]))
