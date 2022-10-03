@@ -1,3 +1,7 @@
+# Best Val Acc 0.6656914353370667 @ epoch 599
+# Best Test Acc 0.7305269837379456 @ Best val epoch 599
+# Best Test Acc 0.7310342788696289 @ epoch 565
+# checkpoint saved in:  checkpoints/semi_supervised/inat_fixmatch_lift_tail_uniform/10-02-2022-11:58
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_supervised.py \
   /scratch/fercus/imagenet \
