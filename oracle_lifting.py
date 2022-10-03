@@ -28,7 +28,7 @@ parser.add_argument('--dataset', default='imagenet127', type=str,
 parser.add_argument('--index_name', default='default', type=str,
                     help='name of index dir (the directory under indexes/)')
 parser.add_argument('--lift', default='random', type=str,
-                    choices=['random', 'tail', 'tail_uniform'],
+                    choices=['random', 'tail', 'tail_uniform', 'uniform'],
                     help='lifting method')
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for lifting tail. ')
@@ -108,14 +108,14 @@ def main():
             lifted_tail_samples, num_tail_classes, tail_classes = lift_tail(
                 train_targets, unlabeled_targets, num_classes, args.threshold)
             if args.lift == 'random':
-                lifted_tail_samples, _, _ = np.random.choice(
+                lifted_tail_samples = np.random.choice(
                     np.arange(len(unlabeled_indexes)), size=len(lifted_tail_samples), replace=False
                 )
         elif args.lift in ['uniform', 'tail_uniform']:
             lifted_tail_samples, num_tail_classes, tail_classes = lift_uniform(
                 train_targets, unlabeled_targets, num_classes, args.threshold, args.budget)
             if args.lift == 'uniform':
-                lifted_tail_samples, _, _ = np.random.choice(
+                lifted_tail_samples = np.random.choice(
                     np.arange(len(unlabeled_indexes)), size=len(lifted_tail_samples), replace=False
                 )
 
