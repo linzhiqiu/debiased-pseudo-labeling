@@ -7,19 +7,13 @@
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --lift random
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --lift tail
 import argparse
-import math
-import os
 import shutil
-import time
 import random
 import numpy as np
 import pandas as pd
-import gdown
 import torch
 import torch.utils.data
 from pathlib import Path
-
-import data.datasets as datasets
 
 parser = argparse.ArgumentParser(description='PyTorch Dataset Index Preparation')
 parser.add_argument('--dataset', default='imagenet127', type=str,
@@ -75,7 +69,7 @@ def main():
     train_index_file = index_dir / "train.csv"
     val_index_file = index_dir / "val.csv"
     unlabeled_index_file = index_dir / "unlabeled.csv"
-
+    import pdb; pdb.set_trace()
 
     new_index_dir = Path("indexes") / f"{args.dataset}" / f"{args.index_name}_lift_{args.lift}"
     if not new_index_dir.exists():

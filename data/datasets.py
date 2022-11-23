@@ -156,6 +156,8 @@ def get_inat_ssl_datasets(
         multiviews=False):
     traindir = os.path.join(root, 'u_train_in')
     testdir = os.path.join(root, 'l_train_and_val')
+    print(root)
+    import pdb; pdb.set_trace()
     assert os.path.exists(traindir)
     assert os.path.exists(testdir)
 
