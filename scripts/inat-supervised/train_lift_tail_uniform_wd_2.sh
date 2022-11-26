@@ -1,16 +1,16 @@
-# Best Val Acc 0.5027320981025696 @ epoch 291
-# Best Test Acc 0.5556793808937073 @ Best val epoch 291
-# Best Test Acc 0.556481122970581 @ epoch 298
-# checkpoint saved in:  checkpoints/supervised/inat_wd_1e_3/11-23-2022-17:26
+# Best Val Acc 0.5696818828582764 @ epoch 266
+# Best Test Acc 0.6277998685836792 @ Best val epoch 266
+# Best Test Acc 0.6327565312385559 @ epoch 294
+# checkpoint saved in:  checkpoints/supervised/inat_lift_tail_uniform_1e_5/11-24-2022-12:19
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_supervised.py \
-  /scratch/fercus/inat \
-  --index_name default \
+  /ssd0/fercus/inat \
+  --index_name default_lift_tail_uniform \
   --dataset inat \
   --arch FixMatch --backbone resnet50_encoder \
   --eman \
   --lr 0.003 \
-  --weight-decay 1e-3 \
+  --weight-decay 1e-5 \
   --cos \
   --epochs 300 \
   --warmup-epoch 10 \
@@ -18,5 +18,5 @@ python main_supervised.py \
   --self-pretrained pretrained/res50_moco_eman_800ep.pth.tar \
   --amp-opt-level O1 \
   --train-type RandAugment \
-  --output checkpoints/supervised/inat_wd_1e_3/ \
+  --output checkpoints/supervised/inat_lift_tail_uniform_1e_5/ \
   --cls 810 \
