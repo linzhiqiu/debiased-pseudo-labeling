@@ -48,7 +48,7 @@ parser.add_argument('--algo', type=str, default="supervised", choices=["supervis
 parser.add_argument('--model_name', type=str, default=None,
                     help='model name in results.py')
 # below are default (no need to modify)
-parser.add_argument('--root', metavar='DIR', default='/ssd0/fercus/',
+parser.add_argument('--root', metavar='DIR', default='/scratch/fercus/',
                     help='path to dataset')
 parser.add_argument('--arch', metavar='ARCH', default='FixMatch',
                     help='model architecture (default is FixMatch)')
