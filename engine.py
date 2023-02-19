@@ -115,7 +115,7 @@ def validate_perclass(val_loader, model, criterion, args, prefix='Test'):
             if i % args.print_freq == 0:
                 progress.display(i)
 
-        perclass_acc = [0 for c in range(args.cls)]
+        perclass_acc = [0 for _ in range(args.cls)]
         for c in range(args.cls):
             perclass_acc[c] = ((preds_list == target_list) * (target_list == c)).sum().float() / max((target_list == c).sum(), 1)
         acc = (preds_list == target_list).sum().float() / len(target_list)

@@ -1,6 +1,6 @@
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 python main_semi_supervised.py \
-  /scratch/fercus/imagenet \
+  /ssd0/fercus/imagenet \
   --index_name default_lift_uniform \
   --dataset imagenet127 \
   --arch FixMatch --backbone resnet50_encoder \

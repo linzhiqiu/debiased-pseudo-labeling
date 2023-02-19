@@ -23,7 +23,6 @@ import torch.utils.data
 import torch.utils.data.distributed
 from torch.utils.data import DataLoader, RandomSampler
 from torch.utils.data.distributed import DistributedSampler
-
 from data.datasets import get_inat_ssl_datasets, get_imagenet127_ssl_datasets
 import backbone as backbone_models
 from models import get_fixmatch_model

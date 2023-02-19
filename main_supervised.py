@@ -236,16 +236,9 @@ def main_worker(gpu, ngpus_per_node, args):
                 new_key = k.replace("module.", "")
                 state_dict[new_key] = state_dict[k]
                 del state_dict[k]
-            model_num_cls = state_dict['fc.weight'].shape[0]
-            if model_num_cls != args.cls:
-                # if num_cls don't match, remove the last layer
-                del state_dict['fc.weight']
-                del state_dict['fc.bias']
-                msg = model.load_state_dict(state_dict, strict=False)
-                assert set(msg.missing_keys) == {"fc.weight", "fc.bias"}, \
-                    "missing keys:\n{}".format('\n'.join(msg.missing_keys))
-            else:
-                model.load_state_dict(state_dict)
+            model_num_cls = state_dict['ema.fc.weight'].shape[0]
+            assert model_num_cls == args.cls
+            model.load_state_dict(state_dict)
             print("=> loaded pre-trained model '{}' (epoch {})".format(args.pretrained, checkpoint['epoch']))
         else:
             print("=> no pretrained model found at '{}'".format(args.pretrained))

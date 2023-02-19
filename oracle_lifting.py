@@ -2,6 +2,8 @@
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --budget 6 --lift uniform
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --budget 12 --lift tail_uniform
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --budget 12 --lift uniform
+
+# Below are archived
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift random
 # python oracle_lifting.py --dataset inat --seed=1 --index_name default --threshold 18 --lift tail
 # python oracle_lifting.py --dataset imagenet127 --seed=1 --index_name default --threshold 25 --lift random
@@ -69,7 +71,7 @@ def main():
     train_index_file = index_dir / "train.csv"
     val_index_file = index_dir / "val.csv"
     unlabeled_index_file = index_dir / "unlabeled.csv"
-    import pdb; pdb.set_trace()
+
 
     new_index_dir = Path("indexes") / f"{args.dataset}" / f"{args.index_name}_lift_{args.lift}"
     if not new_index_dir.exists():
